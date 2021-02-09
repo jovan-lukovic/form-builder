@@ -1,0 +1,99 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rating-container, .star-rating__root {
+    vertical-align: middle;
+    display: inline-block;
+}
+.rating-container .rating-stars:before,.rating-container:before {
+    content: attr(data-content);
+}
+.rating-container input {
+    display: none;
+}
+.star-rating__star {
+    width:25px;
+}
+.star-rating__star #star-flat {
+    fill: #C6C6C6;
+}
+.star-rating__star #star-flat:hover {
+    fill: #FFA91B;
+}
+.star-rating__root{
+    font-size:2em;
+}
+.star-rating__root.rating-editing:hover{
+    cursor:pointer;
+}
+.rating-container {
+    position: relative;
+    color: #cccccc;
+    overflow: hidden;
+    font-size: 2em;
+}
+.rating-container .rating-stars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #F5A71B;
+    -webkit-transition: all .01s;
+    -moz-transition: all .01s;
+    transition: all .01s;
+    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(#FDBD47), to(#F5A71B));
+}
+.rating-caption {
+    font-size: 1.25em;
+    vertical-align: middle;
+    margin-right: .5em;
+}
+.rating-disabled .rating-container:hover {
+    cursor: not-allowed;
+}
+.star-rating__size--sm {
+    font-size: 1em;
+}
+.star-rating__size--md {
+    font-size: 2em;
+}
+.star-rating__size--lg {
+    font-size: 2.5em;
+}
