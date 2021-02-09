@@ -28,6 +28,7 @@
     "scheduler": "^0.20.1",
     "web-vitals": "^0.2.4"
   },
+  "homepage": "https://jovan-lukovic.github.io/form-builder/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
