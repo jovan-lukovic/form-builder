@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -23,6 +23,19 @@ const useStyles = makeStyles({
 
 const Checkboxes = ({ data, mutable }) => {
   const classes = useStyles();
+  const [value, setValue] = useState([]);
+
+  useEffect(() => {
+    setValue(data.default_value)
+  }, [data.default_value]);
+
+  const handleChange = (e) => {
+    if (e.target.checked) {
+      setValue([...value, parseFloat(e.target.value)]);
+    } else {
+      setValue(value.filter(v => v !== parseFloat(e.target.value)));
+    }
+  };
 
   return (
     <div className={classes.container}>
@@ -31,7 +44,12 @@ const Checkboxes = ({ data, mutable }) => {
         <div>
           {
             data.options.map((option, index) => (
-              <FormControlLabel key={index} className={classes.formControlLabel} control={<Checkbox />} disabled={mutable} label={option.text} value={option.value} />
+              <FormControlLabel
+                key={index} className={classes.formControlLabel}
+                control={<Checkbox checked={!!value.find(v => option.value === v)} onChange={handleChange} />}
+                disabled={mutable}
+                label={option.text}
+                value={option.value} />
             ))
           }
         </div>

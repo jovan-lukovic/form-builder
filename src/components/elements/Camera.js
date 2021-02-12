@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import { atom, useAtom } from 'jotai';
 
 const useStyles = makeStyles({
   container: {
@@ -61,11 +60,12 @@ const useStyles = makeStyles({
   }
 });
 
-const imgAtom = atom(null);
-
 const Camera = ({ data, mutable, onEdit, onDelete }) => {
   const classes = useStyles({ mutable });
-  const [img, setImg] = useAtom(imgAtom);
+  const [img, setImg] = useState('');
+  useEffect(() => {
+    setImg(data.img_src);
+  }, [data.img_src]);
 
   const displayImage = (e) => {
     if (e.target.files && e.target.files.length) {

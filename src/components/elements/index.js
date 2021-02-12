@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from "@material-ui/core/styles";
+
+import { defaultComponents } from "../Toobox";
 
 import Header from "./Header";
 import Parapraph from "./Paragraph";
@@ -31,6 +35,26 @@ const useStyles = makeStyles({
     padding: '1rem 10px',
     marginBottom: 10,
     position: 'relative',
+    boxShadow: props.hover ? '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)' : 'none',
+    background: props.hover ? '#ffffff' : 'none',
+
+    '&': props.mutable ? {
+        maxHeight: 150,
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          width: 8,
+        },
+        '&::-webkit-scrollbar-track': {
+          boxShadow: 'inset 0 0 3px rgba(0,0,0,0.1)',
+          backgroundColor: '#F5F5F5',
+          borderRadius: 4,
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#cccccc',
+          border: '1px solid #dddddd',
+          borderRadius: 4,
+        },
+      } : {},
 
     '& p': {
       margin: 0,
@@ -38,7 +62,7 @@ const useStyles = makeStyles({
 
     '&:hover': props.mutable ? {
       boxShadow: '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)',
-      backgroundColor: '#ffffff',
+      background: '#ffffff',
 
       '& .actions': {
         display: 'flex',
@@ -46,12 +70,13 @@ const useStyles = makeStyles({
     } : {},
 
     '& .actions': {
-      display: 'none',
-      position: 'absolute',
+      display: props.hover ? 'flex' : 'none',
+      position: 'fixed',
       top: 10,
       right: 10,
       backgroundColor: '#fff',
       zIndex: 10,
+      borderRadius: 5
     },
   }),
   button: {
@@ -75,7 +100,13 @@ const useStyles = makeStyles({
 });
 
 const Elements = ({item, editElement, deleteElement, insertElement, mutable}) => {
-  const classes = useStyles({ mutable });
+  const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles({ mutable, hover: Boolean(anchorEl) });
+
+  const handleInsert = (component) => {
+    setAnchorEl(null);
+    insertElement(item.id, component);
+  };
 
   const getComponent = (component, index) => {
     switch (component.key) {
@@ -141,9 +172,22 @@ const Elements = ({item, editElement, deleteElement, insertElement, mutable}) =>
           <IconButton className={classes.button} aria-label='delete' onClick={() => deleteElement(item.id)}>
             <DeleteIcon className={classes.icon}/>
           </IconButton>
-          <IconButton className={classes.button} aria-label='delete' onClick={() => insertElement(item.id)}>
+          <IconButton className={classes.button} aria-label='delete' onClick={(e) => setAnchorEl(e.currentTarget)}>
             <AddIcon className={classes.icon}/>
           </IconButton>
+          <Menu
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={() => setAnchorEl(null)}
+          >
+            {
+              defaultComponents.map(component => (
+                <MenuItem key={component.key} onClick={() => handleInsert(component)}>
+                  {component.name}
+                </MenuItem>
+              ))
+            }
+          </Menu>
         </div>
       }
     </div>

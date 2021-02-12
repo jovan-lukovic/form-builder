@@ -21,10 +21,11 @@ const useStyles = makeStyles({
       height: 'unset',
       top: '10%',
       right: '10%',
+      width: 800,
+      maxWidth: '80%',
     },
   },
   viewer: {
-    width: 800,
     flex: 1,
     padding: 30,
     display: 'flex',
@@ -58,6 +59,8 @@ const minLabelAtom = atom('');
 const maxLabelAtom = atom('');
 const defaultValueAtom = atom('');
 const hrefAtom = atom('');
+const imgSrcAtom = atom('');
+const filePathAtom = atom('');
 
 function EditDrawer() {
   const classes = useStyles();
@@ -81,6 +84,8 @@ function EditDrawer() {
   const [maxLabel, setMaxLabel] = useAtom(maxLabelAtom);
   const [defaultValue, setDefaultValue] = useAtom(defaultValueAtom);
   const [href, setHref] = useAtom(hrefAtom);
+  const [imgSrc, setImgSrc] = useAtom(imgSrcAtom);
+  const [filePath, setFilePath] = useAtom(filePathAtom);
 
   useEffect(() => {
     setOpenState(!!selectedElement);
@@ -133,19 +138,32 @@ function EditDrawer() {
         setMinLabel(columns[activeComponentNo].min_label);
         setMaxValue(columns[activeComponentNo].max_value);
         setMaxLabel(columns[activeComponentNo].max_label);
-        setDefaultValue(columns[activeComponentNo].default_value);
       } else {
         setStep(0);
         setMinValue(0);
         setMinLabel('');
         setMaxValue(0);
         setMaxLabel('');
-        setDefaultValue(0);
       }
       if (columns[activeComponentNo].hasOwnProperty('href')) {
         setHref(columns[activeComponentNo].href);
       } else {
         setHref('');
+      }
+      if (columns[activeComponentNo].hasOwnProperty('img_src')) {
+        setImgSrc(columns[activeComponentNo].img_src);
+      } else {
+        setImgSrc('');
+      }
+      if (columns[activeComponentNo].hasOwnProperty('default_value')) {
+        setDefaultValue(columns[activeComponentNo].default_value);
+      } else {
+        setDefaultValue('');
+      }
+      if (columns[activeComponentNo].hasOwnProperty('file_path')) {
+        setFilePath(columns[activeComponentNo].file_path);
+      } else {
+        setFilePath('');
       }
     }
   }, [activeComponentNo]);
@@ -184,10 +202,18 @@ function EditDrawer() {
             column.min_label = minLabel;
             column.max_value = maxValue;
             column.max_label = maxLabel;
-            column.default_value = defaultValue;
           }
           if (column.hasOwnProperty('href')) {
             column.href = href;
+          }
+          if (column.hasOwnProperty('img_src')) {
+            column.img_src = imgSrc;
+          }
+          if (column.hasOwnProperty('default_value')) {
+            column.default_value = defaultValue;
+          }
+          if (column.hasOwnProperty('file_path')) {
+            column.file_path = filePath;
           }
         }
         return column;
@@ -313,6 +339,10 @@ function EditDrawer() {
               setDefaultValue={setDefaultValue}
               href={href}
               setHref={setHref}
+              imgSrc={imgSrc}
+              setImgSrc={setImgSrc}
+              filePath={filePath}
+              setFilePath={setFilePath}
             />
           }
           <div className={classes.footer}>

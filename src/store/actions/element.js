@@ -28,9 +28,9 @@ export const updateElements = (elements) => (dispatch) => {
   });
 };
 
-export const insertElement = (id) => (dispatch) => {
+export const insertElement = (id, component) => (dispatch) => {
   dispatch({
     type: actionTypes.INSERT_ELEMENT,
-    payload: id
+    payload: { id, component }
   });
 };

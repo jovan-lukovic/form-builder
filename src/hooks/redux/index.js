@@ -25,7 +25,7 @@ export const useToggleElement = () => {
 
 export const useInsertElement = () => {
   const dispatch = useDispatch();
-  return (id) => dispatch(insertElement(id));
+  return (id, component) => dispatch(insertElement(id, component));
 };
 
 export const useElements = () => useSelector(({

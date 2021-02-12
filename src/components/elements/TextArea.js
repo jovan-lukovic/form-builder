@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -31,12 +31,21 @@ const useStyles = makeStyles({
 
 const TextArea = ({ data, mutable }) => {
   const classes = useStyles();
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <textarea disabled={mutable}></textarea>
+        <textarea disabled={mutable} value={value} onChange={handleChange}></textarea>
       </div>
     </div>
   );

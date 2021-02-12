@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -25,6 +25,9 @@ const useStyles = makeStyles({
 const RadioButtons = ({ data, mutable }) => {
   const classes = useStyles();
   const [value, setValue] = useState('');
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
 
   return (
     <div className={classes.container}>

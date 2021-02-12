@@ -13,12 +13,8 @@ function FormBuilder({ history }) {
   return (
     <Container>
       <Grid container>
-        <Grid item xs={8}>
-          <MainViewer history={history} />
-        </Grid>
-        <Grid item xs={4}>
-          <Toolbox />
-        </Grid>
+        <MainViewer history={history} />
+        <Toolbox />
       </Grid>
       <EditDrawer />
     </Container>

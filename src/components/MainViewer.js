@@ -5,6 +5,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import { atom, useAtom } from "jotai";
+import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
 
 import {
   useElements,
@@ -20,6 +22,7 @@ import {
 
 import PreviewPanel from "./PreviewPanel";
 import Elements from "./elements";
+const ResponsiveReactGridLayout = WidthProvider(ResponsiveGridLayout);
 
 const useStyles = makeStyles({
   container: {
@@ -27,21 +30,25 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     padding: '30px 0 20px',
+    flex: 1,
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    flexWrap: 'wrap',
   },
   buttonsWrapper: {
     marginBottom: 10,
+    display: 'flex',
+    flexWrap: 'nowrap',
 
     '& button': {
       marginLeft: 15,
     }
   },
   body: {
-    backgroundColor: '#e3e3e3',
+    backgroundColor: '#fafafa',
     flex: 1,
     padding: '50px 30px',
     textAlign: 'left',
@@ -77,6 +84,7 @@ const useStyles = makeStyles({
 });
 
 const isOpenPreviewPanelAtom = atom(false);
+const layoutsAtom = atom([]);
 
 function MainViewer({ history }) {
   const classes = useStyles();
@@ -92,9 +100,29 @@ function MainViewer({ history }) {
 
   const [isOpenPreviewPanel, setIsOpenPreviewPanel] = useAtom(isOpenPreviewPanelAtom);
 
+  const [layouts, setLayouts] = useAtom(layoutsAtom);
+
   useEffect(() => {
     updateElements(selectedForm ? selectedForm.elements : []);
   }, [selectedForm]);
+
+  let elementCount = 0;
+  useEffect(() => {
+    if (elementCount !== elements.length) {
+      setLayouts(elements.map(element => {
+        return {
+          x: 0,
+          y: 0,
+          w: 12,
+          h: 1,
+          i: element.id,
+          static: false,
+          isResizable: false,
+        };
+      }));
+      elementCount = elements.length;
+    }
+  }, [elements]);
 
   const handleSave = () => {
     if (!selectedForm) {
@@ -119,6 +147,14 @@ function MainViewer({ history }) {
     history.go(-1);
   };
 
+  const onLayoutChange = (layout) => {
+    const updatedElements = layout.sort((a, b) => a.y - b.y).map(item => {
+      return elements.find(element => element.id === item.i);
+    });
+
+    updateElements(updatedElements);
+  };
+
   return (
     <Box className={classes.container}>
       <IconButton className={classes.backButton} onClick={handleBack}>
@@ -129,23 +165,33 @@ function MainViewer({ history }) {
         <Box className={classes.buttonsWrapper}>
           <Button variant='contained'>Export</Button>
           <Button variant='contained' onClick={handleSave}>Save</Button>
-          <Button variant='contained' onClick={handlePreview} color='primary'>Preview</Button>
+          <Button variant='contained' onClick={handlePreview}>Preview</Button>
         </Box>
       </Box>
+
       <Box className={classes.body}>
         {
           elements.length > 0 ?
-            <>
+            <ResponsiveReactGridLayout
+              layouts={{lg: layouts}}
+              onLayoutChange={onLayoutChange}
+              useCSSTransforms={Boolean(layouts)}
+              measureBeforeMount={false}
+              compactType={'vertical'}
+            >
               {
-                elements.map((item, index) => (
-                  <Elements key={item.id} item={item} editElement={editElement} deleteElement={deleteElement} insertElement={insertElement} mutable={true} />
+                elements.map((item) => (
+                  <div key={item.id}>
+                    <Elements item={item} editElement={editElement} deleteElement={deleteElement} insertElement={insertElement} mutable={true} />
+                  </div>
                 ))
               }
-            </>
+            </ResponsiveReactGridLayout>
             :
             <p className={classes.alert}>Select an item from toolbox...</p>
         }
       </Box>
+
       <PreviewPanel isOpen={isOpenPreviewPanel} closePanel={() => setIsOpenPreviewPanel(false)} />
     </Box>
   );

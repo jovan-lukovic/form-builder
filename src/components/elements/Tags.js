@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
-import { atom, useAtom } from 'jotai';
 
 const useStyles = makeStyles({
   container: {
@@ -36,11 +35,13 @@ const useStyles = makeStyles({
   }
 });
 
-const valueAtom = atom([]);
-
 const Tags = ({ data, mutable }) => {
   const classes = useStyles();
-  const [value, setValue] = useAtom(valueAtom);
+  const [value, setValue] = useState([]);
+
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
 
   const handleChange = (e) => {
     setValue(e.target.value)
@@ -60,14 +61,14 @@ const Tags = ({ data, mutable }) => {
             renderValue={(selected) => (
               <div>
                 {selected.map((value, index) => (
-                  <Chip key={index} label={value.text} />
+                  <Chip key={index} label={data.options.find(option => option.value === value)?.text} />
                 ))}
               </div>
             )}
           >
             {
               data.options.map((option, index) => (
-                <MenuItem key={index} value={option}>
+                <MenuItem key={index} value={option.value}>
                   {option.text}
                 </MenuItem>
               ))

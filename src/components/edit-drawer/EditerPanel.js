@@ -5,6 +5,11 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
+import StarRating from "../elements/StarRating";
+
+import Checkbox from "@material-ui/core/Checkbox";
+import DateFnsUtils from "@date-io/date-fns";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 const useStyles = makeStyles({
   content: {
@@ -74,8 +79,64 @@ const useStyles = makeStyles({
       marginLeft: 15,
       flex: 1,
     },
+    '& textarea': {
+      marginLeft: 15,
+      flex: 1,
+      display: 'block',
+      padding: '6px 12px',
+      fontSize: 14,
+      lineHeight: 1.4,
+      marginRight: 10,
+      border: '1px solid #ccc',
+      borderRadius: 4,
+      boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
+      transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s',
+    },
     '& label': {
       minWidth: 40,
+    },
+    '& .rating': {
+      marginLeft: 10,
+      '& input': {
+        display: 'none',
+      }
+    },
+    '& .upload-container': {
+      position: 'relative',
+
+      '& input': {
+        position: 'relative',
+        opacity: 0,
+        zIndex: 2,
+        height: '50px',
+      },
+      '& img': {
+        height: 100,
+        width: 150,
+      },
+      '& .input-control': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 1,
+        display: 'flex',
+        alignItems: 'flex-start',
+        padding: 10,
+
+        '& button': {
+          color: '#333',
+          border: '1px solid #ccc',
+          padding: '6px 12px',
+          marginRight: 10,
+          borderRadius: 5,
+        }
+      }
+    },
+    '& .date-picker': {
+      '& input': {
+        border: 0,
+        boxShadow: 'none',
+      }
     }
   }
 });
@@ -110,10 +171,52 @@ const EditorPanel = (
     defaultValue,
     setDefaultValue,
     href,
-    setHref
+    setHref,
+    imgSrc,
+    setImgSrc,
+    filePath,
+    setFilePath
   }) => {
 
   const classes = useStyles();
+
+  const changeImageSrc = (e) => {
+    if (e.target.files && e.target.files.length) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onloadend = function () {
+        setImgSrc(reader.result);
+      }
+    }
+  };
+
+  const changeDefaultValue = (e, ratingCache) => {
+    if (columns[activeComponentNo].key === 'Range') {
+      setDefaultValue(parseFloat(e.target.value));
+    } else if (columns[activeComponentNo].key === 'RadioButtons' || columns[activeComponentNo].key === 'Dropdown') {
+      if (e.target.checked) {
+        setDefaultValue(parseFloat(e.target.value));
+      } else {
+        setDefaultValue('');
+      }
+    } else if (columns[activeComponentNo].key === 'Checkboxes' || columns[activeComponentNo].key === 'Tags') {
+      if (e.target.checked) {
+        setDefaultValue([...defaultValue, parseFloat(e.target.value)])
+      } else {
+        setDefaultValue(defaultValue.filter(v => v !== parseFloat(e.target.value)));
+      }
+    } else if (columns[activeComponentNo].key === 'TextInput' || columns[activeComponentNo].key === 'TextArea') {
+      setDefaultValue(e.target.value);
+    } else if (columns[activeComponentNo].key === 'NumberInput') {
+      setDefaultValue(parseFloat(e.target.value));
+    } else if (columns[activeComponentNo].key === 'Rating') {
+      setDefaultValue(ratingCache.rating);
+    } else if (columns[activeComponentNo].key === 'DatePicker') {
+      setDefaultValue(e);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -137,6 +240,16 @@ const EditorPanel = (
           {
             options.map((option, index) => (
               <div key={index} className={classes.option}>
+                <Checkbox
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                  color='default'
+                  value={option.value}
+                  checked={
+                    (columns[activeComponentNo].key === 'Checkboxes' || columns[activeComponentNo].key === 'Tags') ?
+                      (!!defaultValue.find(v => v === option.value)) : (defaultValue === option.value)
+                  }
+                  onChange={(e) => changeDefaultValue(e)}
+                />
                 <input type='text' placeholder='Option text' value={option.text}
                        onChange={(e) => handleOptionTextChange(e, index)}/>
                 <input type='text' value={option.value} onChange={(e) => handleOptionValueChange(e, index)}/>
@@ -185,7 +298,7 @@ const EditorPanel = (
           </div>
           <div className={classes.formControl}>
             <label>Default Value:</label>
-            <input type="number" value={defaultValue} min={minValue} max={maxValue} onChange={(e) => setDefaultValue(parseFloat(e.target.value))} />
+            <input type="number" value={defaultValue} min={minValue} max={maxValue} onChange={(e) => changeDefaultValue(e)} />
           </div>
         </>
         }
@@ -196,6 +309,67 @@ const EditorPanel = (
             <input type="text" value={href} onChange={(e) => setHref(e.target.value)} />
           </div>
         </>
+        }
+        {columns[activeComponentNo].hasOwnProperty('img_src') &&
+          <div className={classes.formControl}>
+            <label>Image:</label>
+            <div className='upload-container'>
+              <input type='file' accept='image/*' capture='camera' onChange={changeImageSrc} />
+              <div className='input-control'>
+                <button>
+                  <i className='fa fa-camera'></i> Upload Photo
+                </button>
+                {imgSrc && <img src={imgSrc} alt=""/>}
+              </div>
+            </div>
+          </div>
+        }
+        {columns[activeComponentNo].key === 'TextInput' &&
+          <div className={classes.formControl}>
+            <label>Default value:</label>
+            <input type="text" value={defaultValue} onChange={changeDefaultValue} />
+          </div>
+        }
+        {columns[activeComponentNo].key === 'NumberInput' &&
+        <div className={classes.formControl}>
+          <label>Default value:</label>
+          <input type="number" value={defaultValue} onChange={changeDefaultValue} />
+        </div>
+        }
+        {columns[activeComponentNo].key === 'TextArea' &&
+        <div className={classes.formControl}>
+          <label>Default value:</label>
+          <textarea value={defaultValue} onChange={changeDefaultValue}></textarea>
+        </div>
+        }
+        {columns[activeComponentNo].key === 'Rating' &&
+        <div className={classes.formControl}>
+          <label>Default value:</label>
+          <div className='rating'>
+            <StarRating name={columns[activeComponentNo].name} rating={defaultValue} onRatingClick={changeDefaultValue} />
+          </div>
+        </div>
+        }
+        {columns[activeComponentNo].key === 'DatePicker' &&
+        <div className={classes.formControl}>
+          <label>Default date:</label>
+          <div className='date-picker'>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                format="MM/dd/yyyy"
+                value={defaultValue ? defaultValue : undefined}
+                onChange={changeDefaultValue}
+              />
+            </MuiPickersUtilsProvider>
+          </div>
+        </div>
+        }
+        {columns[activeComponentNo].hasOwnProperty('file_path') &&
+        <div className={classes.formControl}>
+          <label>File path:</label>
+          <input type="text" value={filePath} onChange={(e) => setFilePath(e.target.value)}  />
+        </div>
         }
       </div>
     </React.Fragment>
@@ -232,6 +406,10 @@ EditorPanel.propTypes = {
   setDefaultValue: PropTypes.func,
   href: PropTypes.string,
   setHref: PropTypes.func,
+  imgSrc: PropTypes.string,
+  setImgSrc: PropTypes.func,
+  filePath: PropTypes.string,
+  setFilePath: PropTypes.func,
 };
 
 EditorPanel.defaultProps = {
@@ -264,6 +442,10 @@ EditorPanel.defaultProps = {
   setDefaultValue: () => {},
   href: '',
   setHref: () => {},
+  imgSrc: '',
+  setImgSrc: () => {},
+  filePath: '',
+  setFilePath: () => {},
 };
 
 export default EditorPanel;

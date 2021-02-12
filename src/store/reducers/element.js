@@ -1,6 +1,5 @@
 import * as actionTypes from '../actionTypes';
 import ID from '../../utils/UUID';
-import { defaultComponents } from "../../components/Toobox";
 
 const INITIAL_STATE = {
   elements: [],
@@ -40,12 +39,12 @@ export default (state = INITIAL_STATE, action) => {
       };
 
     case actionTypes.INSERT_ELEMENT:
-      const index = state.elements.findIndex(element => element.id === action.payload);
+      const index = state.elements.findIndex(element => element.id === action.payload.id);
       const newElements = [
         ...state.elements.slice(0, index + 1),
         {
           id: ID.uuid(),
-          components: [defaultComponents[0]]
+          components: [action.payload.component]
         },
         ...state.elements.slice(index + 1, state.elements.length)
       ];

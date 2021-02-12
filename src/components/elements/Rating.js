@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -19,12 +19,21 @@ const useStyles = makeStyles({
 
 const Rating = ({ data, mutable }) => {
   const classes = useStyles();
+  const [value, setValue] = useState(null);
+
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
+
+  const handleChange = (e, ratingCache) => {
+    setValue(ratingCache.rating);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <StarRating name={data.field_name} ratingAmount={5} disabled={mutable} />
+        <StarRating name={data.field_name} rating={value} onRatingClick={handleChange} ratingAmount={5} disabled={mutable} />
       </div>
     </div>
   );

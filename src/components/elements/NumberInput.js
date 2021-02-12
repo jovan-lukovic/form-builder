@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -31,12 +31,21 @@ const useStyles = makeStyles({
 
 const NumberInput = ({ data, mutable }) => {
   const classes = useStyles();
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
+
+  const handleChange = (e) => {
+    setValue(parseFloat(e.target.value));
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <input disabled={mutable} type="number" />
+        <input disabled={mutable} type="number" value={value} onChange={handleChange} />
       </div>
     </div>
   );

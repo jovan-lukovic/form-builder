@@ -1,47 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from "@material-ui/core/Box";
+import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import { atom, useAtom } from "jotai";
 
 import { useCreateElement } from "../hooks/redux";
 
 // components
 import ToolboxItem from "./TooboxItem";
 
+const ResponsiveReactGridLayout = WidthProvider(ResponsiveGridLayout);
+
 export const defaultComponents = [
   {
     key: 'Header',
     name: 'Header Text',
     icon: 'fa fa-heading',
-    static: true,
     content: 'Placeholder Text...'
   },
   {
     key: 'Label',
     name: 'Label',
-    static: true,
     icon: 'fa fa-font',
     content: 'Placeholder Text...'
   },
   {
     key: 'Paragraph',
     name: 'Paragraph',
-    static: true,
     icon: 'fa fa-paragraph',
     content: 'Placeholder Text...'
   },
   {
     key: 'LineBreak',
     name: 'LineBreak Break',
-    static: true,
     icon: 'fa fa-arrows-alt-h'
   },
   {
     key: 'Dropdown',
-    canHaveAnswer: true,
     name: 'Dropdown',
     icon: 'fa fa-caret-square-down',
     label: 'Placeholder Label',
     field_name: 'dropdown_',
+    default_value: '',
     options: [
       { text: 'option 1', value: 1 },
       { text: 'option 2', value: 2 },
@@ -50,11 +51,11 @@ export const defaultComponents = [
   },
   {
     key: 'Tags',
-    canHaveAnswer: true,
     name: 'Tags',
     icon: 'fa fa-tags',
     label: 'Placeholder Label',
     field_name: 'tags_',
+    default_value: [],
     options: [
       { text: 'option 1', value: 1 },
       { text: 'option 2', value: 2 },
@@ -63,11 +64,11 @@ export const defaultComponents = [
   },
   {
     key: 'Checkboxes',
-    canHaveAnswer: true,
     name: 'Checkboxes',
     icon: 'fa fa-check-square',
     label: 'Placeholder Label',
     field_name: 'checkboxes_',
+    default_value: [],
     options: [
       { text: 'option 1', value: 1 },
       { text: 'option 2', value: 2 },
@@ -76,11 +77,11 @@ export const defaultComponents = [
   },
   {
     key: 'RadioButtons',
-    canHaveAnswer: true,
     name: 'Multiple Choice',
     icon: 'fa fa-dot-circle',
     label: 'Placeholder Label',
     field_name: 'radio_buttons_',
+    default_value: '',
     options: [
       { text: 'option 1', value: 1 },
       { text: 'option 2', value: 2 },
@@ -89,27 +90,27 @@ export const defaultComponents = [
   },
   {
     key: 'TextInput',
-    canHaveAnswer: true,
     name: 'Text Input',
     label: 'Placeholder Label',
     icon: 'fa fa-font',
-    field_name: 'text_input_'
+    field_name: 'text_input_',
+    default_value: '',
   },
   {
     key: 'NumberInput',
-    canHaveAnswer: true,
     name: 'Number Input',
     label: 'Placeholder Label',
     icon: 'fa fa-plus',
-    field_name: 'number_input_'
+    field_name: 'number_input_',
+    default_value: '',
   },
   {
     key: 'TextArea',
-    canHaveAnswer: true,
     name: 'Multi-line Input',
     label: 'Placeholder Label',
     icon: 'fa fa-text-height',
-    field_name: 'text_area_'
+    field_name: 'text_area_',
+    default_value: '',
   },
   {
     key: 'Image',
@@ -121,24 +122,23 @@ export const defaultComponents = [
   },
   {
     key: 'Rating',
-    canHaveAnswer: true,
     name: 'Rating',
     label: 'Placeholder Label',
     icon: 'fa fa-star',
-    field_name: 'rating_'
+    field_name: 'rating_',
+    default_value: '',
   },
   {
     key: 'DatePicker',
     canDefaultToday: true,
-    canReadOnly: true,
     name: 'Date',
     icon: 'fa fa-calendar',
     label: 'Placeholder Label',
-    field_name: 'date_picker_'
+    field_name: 'date_picker_',
+    default_value: new Date(),
   },
   {
     key: 'Signature',
-    canReadOnly: true,
     name: 'Signature',
     icon: 'fa fa-signature',
     label: 'Signature',
@@ -149,7 +149,6 @@ export const defaultComponents = [
     key: 'HyperLink',
     name: 'Web site',
     icon: 'fa fa-link',
-    static: true,
     content: 'Placeholder Web site link ...',
     href: 'http://www.example.com'
   },
@@ -157,11 +156,10 @@ export const defaultComponents = [
     key: 'Download',
     name: 'File Attachment',
     icon: 'fa fa-file',
-    static: true,
     content: 'Placeholder file name ...',
     field_name: 'download_',
     file_path: '',
-    _href: ''
+    href: ''
   },
   {
     key: 'Range',
@@ -181,9 +179,12 @@ export const defaultComponents = [
     name: 'Camera',
     icon: 'fa fa-camera',
     label: 'Placeholder Label',
-    field_name: 'camera_'
+    field_name: 'camera_',
+    img_src: ''
   }
 ];
+
+const layoutsAtom = atom([]);
 
 const useStyles = makeStyles({
   container: {
@@ -192,6 +193,11 @@ const useStyles = makeStyles({
     height: '100vh',
     display: 'flex',
     flexDirection: 'column',
+    width: '30%',
+    '@media(max-width: 991px)': {
+      width: '100%',
+      marginLeft: 0,
+    },
   },
   header: {
     marginBottom: 5,
@@ -216,9 +222,23 @@ const useStyles = makeStyles({
 });
 
 function Toolbox() {
-
   const classes = useStyles();
   const createElement = useCreateElement();
+  const [layouts, setLayouts] = useAtom(layoutsAtom);
+
+  useEffect(() => {
+    setLayouts(defaultComponents.map(component => {
+      return {
+        x: 0,
+        y: 0,
+        w: 12,
+        h: 0.45,
+        i: component.key,
+        static: false,
+        isResizable: false,
+      }
+    }));
+  }, [defaultComponents]);
 
   return (
     <Box className={classes.container}>
@@ -226,11 +246,21 @@ function Toolbox() {
         <h1>Toolbox</h1>
       </Box>
       <Box className={classes.body}>
-        {
-          defaultComponents.map(item => (
-            <ToolboxItem key={item.key} data={item} onClick={() => createElement({...item})} />
-          ))
-        }
+        <ResponsiveReactGridLayout
+          layouts={{lg: layouts}}
+          useCSSTransforms={Boolean(layouts)}
+          measureBeforeMount={false}
+          compactType={'vertical'}
+          preventCollision={false}
+        >
+          {
+            defaultComponents.map(item => (
+              <div key={item.key}>
+                <ToolboxItem data={item} onClick={() => createElement({...item})}/>
+              </div>
+            ))
+          }
+        </ResponsiveReactGridLayout>
       </Box>
     </Box>
   );

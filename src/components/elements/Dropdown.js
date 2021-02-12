@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -31,12 +31,21 @@ const useStyles = makeStyles({
 
 const Dropdown = ({ data, mutable }) => {
   const classes = useStyles();
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    setValue(data.default_value);
+  }, [data.default_value]);
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <select disabled={mutable}>
+        <select disabled={mutable} onChange={handleChange} value={value}>
           {
             data.options.map((option, index) => {
               return <option key={index} value={option.value}>{option.text}</option>
