@@ -15,20 +15,28 @@ const useStyles = makeStyles({
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    padding: '30px 10% 50px',
+    padding: '30px 10px 50px',
   },
   header: {
     display: 'flex',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    '& h1': {
+      marginRight: 10,
+    }
   },
   buttonsWrapper: {
     display: 'flex',
     justifyContent: 'flex-end',
     marginBottom: 10,
+    flex: 1,
+    '& button': {
+      whiteSpace: 'nowrap',
+    }
   },
   body: {
-    backgroundColor: '#e3e3e3',
+    backgroundColor: '#fafafa',
     flex: 1,
     padding: '50px 30px',
     textAlign: 'left',

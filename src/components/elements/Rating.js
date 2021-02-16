@@ -22,7 +22,7 @@ const Rating = ({ data, mutable }) => {
   const [value, setValue] = useState(null);
 
   useEffect(() => {
-    setValue(data.default_value);
+    setValue(data.default_value ? data.default_value : 0);
   }, [data.default_value]);
 
   const handleChange = (e, ratingCache) => {

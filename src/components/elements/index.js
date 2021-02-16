@@ -38,24 +38,6 @@ const useStyles = makeStyles({
     boxShadow: props.hover ? '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)' : 'none',
     background: props.hover ? '#ffffff' : 'none',
 
-    '&': props.mutable ? {
-        maxHeight: 150,
-        overflow: 'auto',
-        '&::-webkit-scrollbar': {
-          width: 8,
-        },
-        '&::-webkit-scrollbar-track': {
-          boxShadow: 'inset 0 0 3px rgba(0,0,0,0.1)',
-          backgroundColor: '#F5F5F5',
-          borderRadius: 4,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: '#cccccc',
-          border: '1px solid #dddddd',
-          borderRadius: 4,
-        },
-      } : {},
-
     '& p': {
       margin: 0,
     },
@@ -71,12 +53,12 @@ const useStyles = makeStyles({
 
     '& .actions': {
       display: props.hover ? 'flex' : 'none',
-      position: 'fixed',
+      position: 'absolute',
       top: 10,
       right: 10,
       backgroundColor: '#fff',
       zIndex: 10,
-      borderRadius: 5
+      borderRadius: 5,
     },
   }),
   button: {
@@ -172,7 +154,7 @@ const Elements = ({item, editElement, deleteElement, insertElement, mutable}) =>
           <IconButton className={classes.button} aria-label='delete' onClick={() => deleteElement(item.id)}>
             <DeleteIcon className={classes.icon}/>
           </IconButton>
-          <IconButton className={classes.button} aria-label='delete' onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <IconButton className={classes.button} aria-label='insert' onClick={(e) => setAnchorEl(e.currentTarget)}>
             <AddIcon className={classes.icon}/>
           </IconButton>
           <Menu

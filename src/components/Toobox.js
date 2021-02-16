@@ -195,8 +195,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     width: '30%',
     '@media(max-width: 991px)': {
-      width: '100%',
-      marginLeft: 0,
+      display: 'none',
     },
   },
   header: {
@@ -246,21 +245,22 @@ function Toolbox() {
         <h1>Toolbox</h1>
       </Box>
       <Box className={classes.body}>
-        <ResponsiveReactGridLayout
-          layouts={{lg: layouts}}
-          useCSSTransforms={Boolean(layouts)}
-          measureBeforeMount={false}
-          compactType={'vertical'}
-          preventCollision={false}
-        >
-          {
-            defaultComponents.map(item => (
-              <div key={item.key}>
-                <ToolboxItem data={item} onClick={() => createElement({...item})}/>
-              </div>
-            ))
-          }
-        </ResponsiveReactGridLayout>
+        {/*<ResponsiveReactGridLayout*/}
+        {/*  layouts={{lg: layouts}}*/}
+        {/*  useCSSTransforms={Boolean(layouts)}*/}
+        {/*  measureBeforeMount={false}*/}
+        {/*  compactType={'vertical'}*/}
+        {/*  preventCollision={false}*/}
+        {/*>*/}
+        {/*  */}
+        {/*</ResponsiveReactGridLayout>*/}
+        {
+          defaultComponents.map(item => (
+            <div key={item.key}>
+              <ToolboxItem data={item} onClick={() => createElement({...item})}/>
+            </div>
+          ))
+        }
       </Box>
     </Box>
   );

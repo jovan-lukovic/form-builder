@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import StarRating from "../elements/StarRating";
 
 import Checkbox from "@material-ui/core/Checkbox";
+import Radio from "@material-ui/core/Radio";
 import DateFnsUtils from "@date-io/date-fns";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
@@ -240,16 +241,26 @@ const EditorPanel = (
           {
             options.map((option, index) => (
               <div key={index} className={classes.option}>
-                <Checkbox
-                  inputProps={{ 'aria-label': 'primary checkbox' }}
-                  color='default'
-                  value={option.value}
-                  checked={
-                    (columns[activeComponentNo].key === 'Checkboxes' || columns[activeComponentNo].key === 'Tags') ?
-                      (!!defaultValue.find(v => v === option.value)) : (defaultValue === option.value)
-                  }
-                  onChange={(e) => changeDefaultValue(e)}
-                />
+                {columns[activeComponentNo].key === 'RadioButtons' ?
+                  <Radio
+                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                    color='default'
+                    value={option.value}
+                    checked={defaultValue === option.value}
+                    onChange={(e) => changeDefaultValue(e)}
+                  />
+                  :
+                  <Checkbox
+                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                    color='default'
+                    value={option.value}
+                    checked={
+                      (columns[activeComponentNo].key === 'Checkboxes' || columns[activeComponentNo].key === 'Tags') ?
+                        (Boolean(defaultValue?.find(v => v === option.value))) : (defaultValue === option.value)
+                    }
+                    onChange={(e) => changeDefaultValue(e)}
+                  />
+                }
                 <input type='text' placeholder='Option text' value={option.text}
                        onChange={(e) => handleOptionTextChange(e, index)}/>
                 <input type='text' value={option.value} onChange={(e) => handleOptionValueChange(e, index)}/>
@@ -271,11 +282,11 @@ const EditorPanel = (
           <div className={classes.formControl}>
             <div className={classes.formControl}>
               <label>Width:</label>
-              <input type="number" value={width} onChange={(e) => setWidth(e.target.value)}/>
+              <input type="number" value={width} onChange={(e) => setWidth(parseFloat(e.target.value))}/>
             </div>
             <div className={classes.formControl}>
               <label>Height:</label>
-              <input type="number" value={height} onChange={(e) => setHeight(e.target.value)}/>
+              <input type="number" value={height} onChange={(e) => setHeight(parseFloat(e.target.value))}/>
             </div>
           </div>
         </>

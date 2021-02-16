@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Menu from "@material-ui/core/Menu";
+import { defaultComponents } from "./Toobox";
+import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from 'prop-types';
 import { atom, useAtom } from "jotai";
 import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
@@ -17,11 +20,13 @@ import {
   useToggleForm,
   useSelectedForm,
   useUpdateForm,
-  useUpdateElements
+  useUpdateElements,
+  useCreateElement
 } from '../hooks/redux';
 
 import PreviewPanel from "./PreviewPanel";
 import Elements from "./elements";
+
 const ResponsiveReactGridLayout = WidthProvider(ResponsiveGridLayout);
 
 const useStyles = makeStyles({
@@ -42,17 +47,39 @@ const useStyles = makeStyles({
     marginBottom: 10,
     display: 'flex',
     flexWrap: 'nowrap',
+    flex: 1,
+    justifyContent: 'flex-end',
 
     '& button': {
       marginLeft: 15,
+      '@media(max-width: 576px)': {
+        '&:first-child': {
+          margin: 0,
+        },
+        marginLeft: 10,
+      },
+      '@media(max-width: 420px)': {
+        marginLeft: 7,
+      },
     }
   },
   body: {
     backgroundColor: '#fafafa',
     flex: 1,
-    padding: '50px 30px',
+    display: 'flex',
     textAlign: 'left',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  componentPanel: {
+    flex: 1,
     overflow: 'auto',
+    padding: '50px 30px',
+
+    '@media(max-width: 992px)': {
+      padding: '70px 10px 30px',
+    },
+
     '&::-webkit-scrollbar': {
       width: 8,
     },
@@ -65,6 +92,15 @@ const useStyles = makeStyles({
       backgroundColor: '#cccccc',
       border: '1px solid #dddddd',
       borderRadius: 4,
+    },
+  },
+  addButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 100,
+    '@media(min-width: 992px)': {
+      display: 'none',
     },
   },
   alert: {
@@ -85,6 +121,7 @@ const useStyles = makeStyles({
 
 const isOpenPreviewPanelAtom = atom(false);
 const layoutsAtom = atom([]);
+const anchorElAtom = atom(null);
 
 function MainViewer({ history }) {
   const classes = useStyles();
@@ -97,8 +134,10 @@ function MainViewer({ history }) {
   const selectedForm = useSelectedForm();
   const updateForm = useUpdateForm();
   const insertElement = useInsertElement();
+  const createElement = useCreateElement();
 
   const [isOpenPreviewPanel, setIsOpenPreviewPanel] = useAtom(isOpenPreviewPanelAtom);
+  const [anchorEl, setAnchorEl] = useAtom(anchorElAtom);
 
   const [layouts, setLayouts] = useAtom(layoutsAtom);
 
@@ -155,6 +194,11 @@ function MainViewer({ history }) {
     updateElements(updatedElements);
   };
 
+  const handleCreate = (component) => {
+    setAnchorEl(null);
+    createElement(component);
+  };
+
   return (
     <Box className={classes.container}>
       <IconButton className={classes.backButton} onClick={handleBack}>
@@ -170,26 +214,47 @@ function MainViewer({ history }) {
       </Box>
 
       <Box className={classes.body}>
-        {
-          elements.length > 0 ?
-            <ResponsiveReactGridLayout
-              layouts={{lg: layouts}}
-              onLayoutChange={onLayoutChange}
-              useCSSTransforms={Boolean(layouts)}
-              measureBeforeMount={false}
-              compactType={'vertical'}
-            >
-              {
-                elements.map((item) => (
-                  <div key={item.id}>
-                    <Elements item={item} editElement={editElement} deleteElement={deleteElement} insertElement={insertElement} mutable={true} />
-                  </div>
-                ))
-              }
-            </ResponsiveReactGridLayout>
-            :
-            <p className={classes.alert}>Select an item from toolbox...</p>
-        }
+        <Button className={classes.addButton} variant='contained' onClick={(e) => setAnchorEl(e.currentTarget)}>
+          Add new component
+        </Button>
+        <Menu
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+        >
+          {
+            defaultComponents.map(component => (
+              <MenuItem key={component.key} onClick={() => handleCreate(component)}>
+                {component.name}
+              </MenuItem>
+            ))
+          }
+        </Menu>
+        <div className={classes.componentPanel}>
+          {
+            elements.length > 0 ?
+              // <ResponsiveReactGridLayout
+              //   layouts={{lg: layouts}}
+              //   onLayoutChange={onLayoutChange}
+              //   useCSSTransforms={Boolean(layouts)}
+              //   measureBeforeMount={false}
+              //   compactType={'vertical'}
+              // >
+              //
+              // </ResponsiveReactGridLayout>
+              <div>
+                {
+                  elements.map((item) => (
+                    <div key={item.id}>
+                      <Elements item={item} editElement={editElement} deleteElement={deleteElement} insertElement={insertElement} mutable={true} />
+                    </div>
+                  ))
+                }
+              </div>
+              :
+              <p className={classes.alert}>Select an item from toolbox...</p>
+          }
+        </div>
       </Box>
 
       <PreviewPanel isOpen={isOpenPreviewPanel} closePanel={() => setIsOpenPreviewPanel(false)} />

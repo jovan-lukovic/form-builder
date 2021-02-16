@@ -123,12 +123,12 @@ function EditDrawer() {
         setSrc('');
       }
       if (columns[activeComponentNo].hasOwnProperty('width')) {
-        setWidth(columns[activeComponentNo].width);
+        setWidth(columns[activeComponentNo].width ? columns[activeComponentNo].width : 0);
       } else {
         setWidth(0);
       }
       if (columns[activeComponentNo].hasOwnProperty('height')) {
-        setHeight(columns[activeComponentNo].height);
+        setHeight(columns[activeComponentNo].width ? columns[activeComponentNo].width : 0);
       } else {
         setHeight(0);
       }
