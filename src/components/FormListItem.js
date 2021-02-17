@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     border: '1px solid #efefef',
     backgroundColor: '#ffffff',
-    padding: 20,
+    padding: '10px 15px',
     marginBottom: 10,
     cursor: 'pointer',
     width: '100%',
@@ -31,12 +31,12 @@ const useStyles = makeStyles({
     '& .actions': {
       display: 'none',
       position: 'absolute',
-      top: 10,
-      right: 10,
+      top: 5,
+      right: 5,
     },
   },
   title: {
-    fontSize: 20,
+    fontSize: 15,
   },
   button: {
     padding: 5,

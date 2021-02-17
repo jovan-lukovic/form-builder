@@ -13,8 +13,12 @@ import DateFnsUtils from "@date-io/date-fns";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 const useStyles = makeStyles({
+  heading: {
+    padding: '0 10px',
+  },
   content: {
     flex: 1,
+    padding: '0 10px',
     overflow: 'auto',
     '&::-webkit-scrollbar': {
       width: 8,
@@ -65,9 +69,37 @@ const useStyles = makeStyles({
   option: {
     display: 'flex',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    '& .inputs': {
+      display: 'flex',
+    },
+    '@media(max-width: 768px)': {
+      position: 'relative',
+      paddingLeft: 50,
+
+      '& input': {
+        marginBottom: 10,
+      },
+      '& .inputs': {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+      },
+      '& .MuiRadio-root': {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+      }
+    },
     '& .actions': {
       '& button': {
         marginLeft: 10,
+      },
+      '@media(max-width: 768px)': {
+        '& button': {
+          padding: 5,
+          marginLeft: 0,
+          marginBottom: 10,
+        },
       },
     },
   },
@@ -261,9 +293,11 @@ const EditorPanel = (
                     onChange={(e) => changeDefaultValue(e)}
                   />
                 }
-                <input type='text' placeholder='Option text' value={option.text}
-                       onChange={(e) => handleOptionTextChange(e, index)}/>
-                <input type='text' value={option.value} onChange={(e) => handleOptionValueChange(e, index)}/>
+                <div className='inputs'>
+                  <input type='text' placeholder='Option text' value={option.text}
+                         onChange={(e) => handleOptionTextChange(e, index)}/>
+                  <input type='text' value={option.value} onChange={(e) => handleOptionValueChange(e, index)}/>
+                </div>
                 <div className='actions'>
                   <IconButton onClick={() => addOption(index)}><AddIcon/></IconButton>
                   {index !== 0 && <IconButton onClick={() => removeOption(index)}><RemoveIcon/></IconButton>}

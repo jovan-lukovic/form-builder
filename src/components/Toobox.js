@@ -231,7 +231,7 @@ function Toolbox() {
         x: 0,
         y: 0,
         w: 12,
-        h: 0.45,
+        h: 1,
         i: component.key,
         static: false,
         isResizable: false,
@@ -245,22 +245,22 @@ function Toolbox() {
         <h1>Toolbox</h1>
       </Box>
       <Box className={classes.body}>
-        {/*<ResponsiveReactGridLayout*/}
-        {/*  layouts={{lg: layouts}}*/}
-        {/*  useCSSTransforms={Boolean(layouts)}*/}
-        {/*  measureBeforeMount={false}*/}
-        {/*  compactType={'vertical'}*/}
-        {/*  preventCollision={false}*/}
-        {/*>*/}
-        {/*  */}
-        {/*</ResponsiveReactGridLayout>*/}
-        {
-          defaultComponents.map(item => (
-            <div key={item.key}>
-              <ToolboxItem data={item} onClick={() => createElement({...item})}/>
-            </div>
-          ))
-        }
+        <ResponsiveReactGridLayout
+          layouts={{lg: layouts}}
+          rowHeight={65}
+          useCSSTransforms={Boolean(layouts)}
+          measureBeforeMount={false}
+          compactType={'vertical'}
+          preventCollision={false}
+        >
+          {
+            defaultComponents.map(item => (
+              <div key={item.key}>
+                <ToolboxItem data={item} onClick={() => createElement({...item})}/>
+              </div>
+            ))
+          }
+        </ResponsiveReactGridLayout>
       </Box>
     </Box>
   );

@@ -59,6 +59,10 @@ const useStyles = makeStyles({
       backgroundColor: '#fff',
       zIndex: 10,
       borderRadius: 5,
+      '@media(max-width: 992px)': {
+        display: 'flex',
+        backgroundColor: 'transparent',
+      },
     },
   }),
   button: {

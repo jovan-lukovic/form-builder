@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   body: {
     backgroundColor: '#fafafa',
     flex: 1,
-    padding: '50px 30px',
+    padding: '30px 15px',
     textAlign: 'left',
   },
   alert: {

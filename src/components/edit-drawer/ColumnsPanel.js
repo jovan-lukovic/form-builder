@@ -18,6 +18,9 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     overflow: 'auto',
+    '@media(max-width: 992px)': {
+      padding: '0 20px',
+    }
   },
   columns: {
     padding: '10px 0',
@@ -43,10 +46,8 @@ const useStyles = makeStyles({
     marginBottom: 10,
     '& span': {
       fontSize: 16,
+      whiteSpace: 'nowrap',
     },
-    '& button': {
-      marginLeft: 15,
-    }
   },
   formControl: {
     minWidth: 150,
@@ -55,6 +56,23 @@ const useStyles = makeStyles({
     '& label': {
       backgroundColor: '#fff',
       padding: '0 10px',
+    },
+    '@media(max-width: 992px)': {
+      marginRight: 5,
+      minWidth: 80,
+      maxWidth: 150,
+      flex: 1,
+    }
+  },
+  buttons: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    '& button': {
+      marginLeft: 15,
+      padding: 5,
+      '@media(max-width: 992px)': {
+        marginLeft: 5,
+      }
     }
   }
 });
@@ -86,11 +104,13 @@ const ColumnsPanel = ({ columns, selectColumnType, addColumn, removeColumn, edit
                   }
                 </Select>
               </FormControl>
-              <IconButton variant='contained' onClick={() => addColumn(index)}><AddIcon/></IconButton>
-              {index !== 0 &&
-              <IconButton variant='contained' onClick={() => removeColumn(index)}><RemoveIcon/></IconButton>}
-              {column.hasOwnProperty('key') &&
-              <IconButton variant='contained' onClick={() => editColumn(index)}><EditIcon/></IconButton>}
+              <div className={classes.buttons}>
+                <IconButton variant='contained' onClick={() => addColumn(index)}><AddIcon/></IconButton>
+                {index !== 0 &&
+                <IconButton variant='contained' onClick={() => removeColumn(index)}><RemoveIcon/></IconButton>}
+                {column.hasOwnProperty('key') &&
+                <IconButton variant='contained' onClick={() => editColumn(index)}><EditIcon/></IconButton>}
+              </div>
             </div>
           ))
         }

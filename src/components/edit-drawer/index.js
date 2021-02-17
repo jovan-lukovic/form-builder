@@ -20,9 +20,9 @@ const useStyles = makeStyles({
       maxHeight: '80%',
       height: 'unset',
       top: '10%',
-      right: '10%',
+      right: '5%',
       width: 800,
-      maxWidth: '80%',
+      maxWidth: '90%',
     },
   },
   viewer: {
@@ -31,6 +31,9 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    '@media(max-width: 992px)': {
+      padding: '20px 10px',
+    }
   },
   footer: {
     marginTop: 30,

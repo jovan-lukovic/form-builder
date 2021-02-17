@@ -39,12 +39,15 @@ const useStyles = makeStyles({
     padding: 30,
     display: 'flex',
     flexDirection: 'column',
+    '@media(max-width: 992px)': {
+      padding: '20px 0 10px',
+    },
   },
   body: {
 
   },
   footer: {
-    paddingTop: 20,
+    paddingTop: 10,
     textAlign: 'right',
     '& button': {
       marginRight: 10,
