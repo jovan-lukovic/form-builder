@@ -29,23 +29,20 @@ const useStyles = makeStyles({
   },
 });
 
-const TextArea = ({ data, mutable }) => {
+const TextArea = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [value, setValue] = useState('');
-
-  useEffect(() => {
-    setValue(data.default_value);
-  }, [data.default_value]);
 
   const handleChange = (e) => {
-    setValue(e.target.value);
+    let component = data;
+    component.default_value = e.target.value;
+    update(columnIndex, component);
   };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <textarea disabled={mutable} value={value} onChange={handleChange}></textarea>
+        <textarea disabled={mutable} value={data.default_value} onChange={handleChange}></textarea>
       </div>
     </div>
   );
@@ -54,11 +51,15 @@ const TextArea = ({ data, mutable }) => {
 TextArea.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 TextArea.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default TextArea;

@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import SignPad from "./SignPad";
 
-import { useUpdateElements } from "../../hooks/redux";
-
 const useStyles = makeStyles({
   container: {
     flex: 1,
@@ -22,8 +20,9 @@ const useStyles = makeStyles({
       border: '1px solid #cdcdcd',
       backgroundColor: '#fff',
       borderRadius: 5,
+      maxHeight: 100,
     },
-    '& .m-signature-pad--footer button': {
+    '& button': {
       color: '#333',
       backgroundColor: '#fff',
       border: '1px solid #ccc',
@@ -43,15 +42,21 @@ const useStyles = makeStyles({
   }
 });
 
-const Signature = ({ data, mutable }) => {
+const Signature = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
+
+  const handleChange = (e) => {
+    let component = data;
+    component.default_value = e;
+    update(columnIndex, component);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
         <div className={classes.signPad}>
-          <SignPad />
+          <SignPad defaultValue={data.default_value} mutable={mutable} onChange={handleChange} />
           <input type='hidden' />
           {mutable && <div className={classes.overlay}></div>}
         </div>
@@ -63,11 +68,15 @@ const Signature = ({ data, mutable }) => {
 Signature.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Signature.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Signature;

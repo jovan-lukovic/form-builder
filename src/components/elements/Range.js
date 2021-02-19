@@ -21,11 +21,10 @@ const useStyles = makeStyles({
   },
 });
 
-const Range = ({ data, mutable }) => {
+const Range = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
 
   const [marks, setMarks] = useState([]);
-  const [value, setValue] = useState(0);
 
   useEffect(() => {
     let labels = [];
@@ -36,11 +35,12 @@ const Range = ({ data, mutable }) => {
       });
     }
     setMarks(labels);
-    setValue(data.default_value);
   }, [data.max_value, data.min_value, data.step, data.default_value])
 
   const handleChange = (e, newValue) => {
-    setValue(newValue);
+    let component = data;
+    component.default_value = newValue;
+    update(columnIndex, component);
   };
 
   return (
@@ -53,7 +53,7 @@ const Range = ({ data, mutable }) => {
             <span>{data.max_label}</span>
           </div>
           <Slider
-            value={value}
+            value={data.default_value ? data.default_value : 0}
             step={data.step}
             min={data.min_value}
             max={data.max_value}
@@ -71,11 +71,15 @@ const Range = ({ data, mutable }) => {
 Range.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Range.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Range;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -15,25 +15,29 @@ const useStyles = makeStyles({
       display: 'block',
     },
   },
+  overlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: 0,
+  }
 });
 
-const Rating = ({ data, mutable }) => {
+const Rating = ({ data, mutable, columnIndex, update  }) => {
   const classes = useStyles();
-  const [value, setValue] = useState(null);
-
-  useEffect(() => {
-    setValue(data.default_value ? data.default_value : 0);
-  }, [data.default_value]);
 
   const handleChange = (e, ratingCache) => {
-    setValue(ratingCache.rating);
+    let component = data;
+    component.default_value = ratingCache.rating;
+    update(columnIndex, component);
   };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <StarRating name={data.field_name} rating={value} onRatingClick={handleChange} ratingAmount={5} disabled={mutable} />
+        <StarRating name={data.field_name} rating={data.default_value ? data.default_value : 0} onRatingClick={handleChange} ratingAmount={5} editing={!mutable} disabled={mutable} />
+        {mutable && <div className={classes.overlay}></div>}
       </div>
     </div>
   );
@@ -42,11 +46,15 @@ const Rating = ({ data, mutable }) => {
 Rating.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Rating.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Rating;

@@ -38,6 +38,18 @@ export default (state = INITIAL_STATE, action) => {
         elements: action.payload
       };
 
+    case actionTypes.UPDATE_ELEMENT:
+      const elements = state.elements.map(element => {
+        if (element.id === action.payload.id) {
+          element = action.payload.element;
+        }
+        return element;
+      });
+      return {
+        ...state,
+        elements
+      };
+
     case actionTypes.INSERT_ELEMENT:
       const index = state.elements.findIndex(element => element.id === action.payload.id);
       const newElements = [

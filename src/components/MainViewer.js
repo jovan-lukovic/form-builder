@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef } from 'react';
+import React, { useEffect, createRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -8,7 +8,6 @@ import { defaultComponents } from "./Toobox";
 import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from 'prop-types';
 import { atom, useAtom } from "jotai";
-import ReactToPdf from "react-to-pdf/lib"
 import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 
@@ -43,14 +42,10 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     flexWrap: 'wrap',
-    '@media(max-width: 768px)': {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-    },
   },
   buttonsWrapper: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     flex: 1,
     justifyContent: 'flex-end',
 
@@ -82,7 +77,7 @@ const useStyles = makeStyles({
     padding: '50px 30px',
 
     '@media(max-width: 992px)': {
-      padding: '30px 0',
+      padding: '30px 10px',
     },
 
     '&::-webkit-scrollbar': {
@@ -119,12 +114,18 @@ const useStyles = makeStyles({
     '& i': {
       fontSize: 18,
     },
+  },
+  dropdownMenu: {
+    '& .MuiPaper-root': {
+      width: '100%',
+    },
   }
 });
 
 const isOpenPreviewPanelAtom = atom(false);
 const layoutsAtom = atom([]);
 const anchorElAtom = atom(null);
+const isMobileAtom = atom(false);
 
 function MainViewer({ history }) {
   const classes = useStyles();
@@ -140,11 +141,19 @@ function MainViewer({ history }) {
   const createElement = useCreateElement();
 
   const [isOpenPreviewPanel, setIsOpenPreviewPanel] = useAtom(isOpenPreviewPanelAtom);
-  const [anchorEl, setAnchorEl] = useAtom(anchorElAtom);
-
   const [layouts, setLayouts] = useAtom(layoutsAtom);
+  const [anchorEl, setAnchorEl] = useAtom(anchorElAtom);
+  const [isMobile, setIsMobile] = useAtom(isMobileAtom);
 
-  const downloadTargetRef = createRef();
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 992);
+  };
 
   useEffect(() => {
     updateElements(selectedForm ? selectedForm.elements : []);
@@ -213,20 +222,16 @@ function MainViewer({ history }) {
         <h1>Form Builder</h1>
         <Box className={classes.buttonsWrapper}>
           <Button className={classes.addButton} variant='contained' onClick={(e) => setAnchorEl(e.currentTarget)}>
-            Add new component
+            Add
           </Button>
-          <ReactToPdf targetRef={downloadTargetRef}>
-            {({toPdf}) => (
-              <Button variant='contained' onClick={toPdf}>Export</Button>
-            )}
-          </ReactToPdf>
           <Button variant='contained' onClick={handleSave}>Save</Button>
           <Button variant='contained' onClick={handlePreview}>Preview</Button>
         </Box>
       </Box>
 
-      <Box className={classes.body} ref={downloadTargetRef}>
+      <Box className={classes.body}>
         <Menu
+          className={classes.dropdownMenu}
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           onClose={() => setAnchorEl(null)}
@@ -242,24 +247,39 @@ function MainViewer({ history }) {
         <div className={classes.componentPanel}>
           {
             elements.length > 0 ?
-              <ResponsiveReactGridLayout
-                layouts={{lg: layouts}}
-                rowHeight={190}
-                cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                onLayoutChange={onLayoutChange}
-                useCSSTransforms={Boolean(layouts)}
-                measureBeforeMount={false}
-                compactType={'vertical'}
-              >
-                {
-                  elements.map((item) => (
-                    <div key={item.id}>
-                      <Elements item={item} editElement={editElement} deleteElement={deleteElement}
-                                insertElement={insertElement} mutable={true}/>
-                    </div>
-                  ))
+              <>
+                {!isMobile ?
+                  <ResponsiveReactGridLayout
+                    layouts={{lg: layouts}}
+                    rowHeight={190}
+                    cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                    onLayoutChange={onLayoutChange}
+                    useCSSTransforms={Boolean(layouts)}
+                    measureBeforeMount={false}
+                    compactType={'vertical'}
+                  >
+                    {
+                      elements.map((item) => (
+                        <div key={item.id}>
+                          <Elements item={item} editElement={editElement} deleteElement={deleteElement}
+                                    insertElement={insertElement} mutable={true}/>
+                        </div>
+                      ))
+                    }
+                  </ResponsiveReactGridLayout>
+                  :
+                  <div>
+                    {
+                      elements.map((item) => (
+                        <div key={item.id}>
+                          <Elements item={item} editElement={editElement} deleteElement={deleteElement}
+                                    insertElement={insertElement} mutable={true}/>
+                        </div>
+                      ))
+                    }
+                  </div>
                 }
-              </ResponsiveReactGridLayout>
+              </>
               :
               <p className={classes.alert}>Select an item from toolbox...</p>
           }
@@ -274,6 +294,5 @@ function MainViewer({ history }) {
 MainViewer.propTypes = {
   history: PropTypes.object.isRequired,
 };
-
 
 export default MainViewer;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -21,20 +21,17 @@ const useStyles = makeStyles({
   }
 });
 
-const Checkboxes = ({ data, mutable }) => {
+const Checkboxes = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [value, setValue] = useState([]);
-
-  useEffect(() => {
-    setValue(data.default_value)
-  }, [data.default_value]);
 
   const handleChange = (e) => {
+    let component = data;
     if (e.target.checked) {
-      setValue([...value, parseFloat(e.target.value)]);
+      component.default_value = [...component.default_value, parseFloat(e.target.value)];
     } else {
-      setValue(value.filter(v => v !== parseFloat(e.target.value)));
+      component.default_value = component.default_value.filter(v => v !== parseFloat(e.target.value));
     }
+    update(columnIndex, component);
   };
 
   return (
@@ -46,7 +43,7 @@ const Checkboxes = ({ data, mutable }) => {
             data.options.map((option, index) => (
               <FormControlLabel
                 key={index} className={classes.formControlLabel}
-                control={<Checkbox checked={!!value.find(v => option.value === v)} onChange={handleChange} />}
+                control={<Checkbox checked={!!data.default_value?.find(v => option.value === v)} onChange={handleChange} />}
                 disabled={mutable}
                 label={option.text}
                 value={option.value} />
@@ -61,11 +58,15 @@ const Checkboxes = ({ data, mutable }) => {
 Checkboxes.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Checkboxes.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Checkboxes;

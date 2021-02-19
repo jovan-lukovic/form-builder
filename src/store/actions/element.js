@@ -28,6 +28,13 @@ export const updateElements = (elements) => (dispatch) => {
   });
 };
 
+export const updateElement = (id, element) => (dispatch) => {
+  dispatch({
+    type: actionTypes.UPDATE_ELEMENT,
+    payload: { id, element }
+  });
+};
+
 export const insertElement = (id, component) => (dispatch) => {
   dispatch({
     type: actionTypes.INSERT_ELEMENT,

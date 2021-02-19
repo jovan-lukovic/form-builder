@@ -33,6 +33,9 @@ const useStyles = makeStyles({
       position: 'absolute',
       top: 5,
       right: 5,
+      '@media(max-width: 992px)': {
+        display: 'flex',
+      }
     },
   },
   title: {

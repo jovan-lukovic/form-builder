@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -60,12 +60,8 @@ const useStyles = makeStyles({
   }
 });
 
-const Camera = ({ data, mutable, onEdit, onDelete }) => {
+const Camera = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles({ mutable });
-  const [img, setImg] = useState('');
-  useEffect(() => {
-    setImg(data.img_src);
-  }, [data.img_src]);
 
   const displayImage = (e) => {
     if (e.target.files && e.target.files.length) {
@@ -74,13 +70,17 @@ const Camera = ({ data, mutable, onEdit, onDelete }) => {
       reader.readAsDataURL(file);
 
       reader.onloadend = function () {
-        setImg(reader.result);
+        let component = data;
+        component.img_src = reader.result;
+        update(columnIndex, component);
       }
     }
   };
 
   const clearImage = () => {
-    setImg(null);
+    let component = data;
+    component.img_src = null;
+    update(columnIndex, component);
   };
 
   return (
@@ -88,7 +88,7 @@ const Camera = ({ data, mutable, onEdit, onDelete }) => {
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
         {
-          !img ?
+          !data.img_src ?
             <div className='input-container'>
               <input type='file' accept='image/*' capture='camera' onChange={displayImage} />
               <div className='input-control'>
@@ -100,7 +100,7 @@ const Camera = ({ data, mutable, onEdit, onDelete }) => {
             </div>
             :
             <div className='image-container'>
-              <img src={img} className='image-upload-preview' alt=""/>
+              <img src={data.img_src} className='image-upload-preview' alt=""/>
               <button onClick={clearImage}>
                 <i className="fa fa-times"></i> Clear Photo
               </button>
@@ -115,11 +115,15 @@ const Camera = ({ data, mutable, onEdit, onDelete }) => {
 Camera.propTypes = {
   data: PropTypes.object.isRequired,
   onDelete: PropTypes.func,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Camera.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Camera;

@@ -6,7 +6,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
 import StarRating from "../elements/StarRating";
-
+import SignPad from "../elements/SignPad";
 import Checkbox from "@material-ui/core/Checkbox";
 import Radio from "@material-ui/core/Radio";
 import DateFnsUtils from "@date-io/date-fns";
@@ -111,6 +111,10 @@ const useStyles = makeStyles({
     '& input': {
       marginLeft: 15,
       flex: 1,
+      minWidth: 50,
+      '@media(max-width: 568px)': {
+        marginLeft: 0,
+      },
     },
     '& textarea': {
       marginLeft: 15,
@@ -170,7 +174,24 @@ const useStyles = makeStyles({
         border: 0,
         boxShadow: 'none',
       }
-    }
+    },
+  },
+  signPad: {
+    '& canvas': {
+      width: '100%',
+      border: '1px solid #cdcdcd',
+      backgroundColor: '#fff',
+      borderRadius: 5,
+      maxHeight: 100,
+    },
+    '& button': {
+      color: '#333',
+      backgroundColor: '#fff',
+      border: '1px solid #ccc',
+      borderRadius: 5,
+      font: 14,
+      padding: '6px 12px',
+    },
   }
 });
 
@@ -247,6 +268,8 @@ const EditorPanel = (
     } else if (columns[activeComponentNo].key === 'Rating') {
       setDefaultValue(ratingCache.rating);
     } else if (columns[activeComponentNo].key === 'DatePicker') {
+      setDefaultValue(e);
+    } else if (columns[activeComponentNo].key === 'Signature') {
       setDefaultValue(e);
     }
   };
@@ -391,7 +414,7 @@ const EditorPanel = (
         <div className={classes.formControl}>
           <label>Default value:</label>
           <div className='rating'>
-            <StarRating name={columns[activeComponentNo].name} rating={defaultValue} onRatingClick={changeDefaultValue} />
+            <StarRating name={columns[activeComponentNo].name} editing={true} rating={defaultValue} onRatingClick={changeDefaultValue} />
           </div>
         </div>
         }
@@ -415,6 +438,12 @@ const EditorPanel = (
           <label>File path:</label>
           <input type="text" value={filePath} onChange={(e) => setFilePath(e.target.value)}  />
         </div>
+        }
+        {columns[activeComponentNo].key === 'Signature' &&
+          <div className={classes.signPad}>
+            <label>Default Sign:</label>
+            <SignPad defaultValue={defaultValue} onChange={changeDefaultValue} />
+          </div>
         }
       </div>
     </React.Fragment>

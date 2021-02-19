@@ -22,18 +22,20 @@ const useStyles = makeStyles({
   }
 });
 
-const RadioButtons = ({ data, mutable }) => {
+const RadioButtons = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [value, setValue] = useState('');
-  useEffect(() => {
-    setValue(data.default_value);
-  }, [data.default_value]);
+
+  const handleChange = (e) => {
+    let component = data;
+    component.default_value = parseFloat(e.target.value);
+    update(columnIndex, component);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <RadioGroup onChange={(e) => setValue(parseFloat(e.target.value))} value={value}>
+        <RadioGroup onChange={handleChange} value={data.default_value}>
           {
             data.options.map((option, index) => (
               <FormControlLabel key={index} className={classes.formControlLabel} control={<Radio />} disabled={mutable} label={option.text} value={option.value} />
@@ -48,11 +50,15 @@ const RadioButtons = ({ data, mutable }) => {
 RadioButtons.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 RadioButtons.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 export default RadioButtons;

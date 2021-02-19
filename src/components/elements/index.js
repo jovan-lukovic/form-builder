@@ -5,6 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from "@material-ui/core/styles";
 
 import { defaultComponents } from "../Toobox";
+import { useUpdateElement } from "../../hooks/redux";
 
 import Header from "./Header";
 import Parapraph from "./Paragraph";
@@ -48,6 +49,7 @@ const useStyles = makeStyles({
 
       '& .actions': {
         display: 'flex',
+        backgroundColor: '#ffffff',
       }
     } : {},
 
@@ -56,12 +58,11 @@ const useStyles = makeStyles({
       position: 'absolute',
       top: 10,
       right: 10,
-      backgroundColor: '#fff',
       zIndex: 10,
       borderRadius: 5,
       '@media(max-width: 992px)': {
         display: 'flex',
-        backgroundColor: 'transparent',
+        backgroundColor: '#fafafa',
       },
     },
   }),
@@ -88,10 +89,17 @@ const useStyles = makeStyles({
 const Elements = ({item, editElement, deleteElement, insertElement, mutable}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles({ mutable, hover: Boolean(anchorEl) });
+  const updateElement = useUpdateElement();
 
   const handleInsert = (component) => {
     setAnchorEl(null);
     insertElement(item.id, component);
+  };
+
+  const update = (index, component) => {
+    let element = item;
+    element.components[index] = component;
+    updateElement(element.id, element);
   };
 
   const getComponent = (component, index) => {
@@ -105,35 +113,35 @@ const Elements = ({item, editElement, deleteElement, insertElement, mutable}) =>
       case 'LineBreak':
         return <LineBreak key={index} />
       case 'TextInput':
-        return <TextInput key={index} mutable={mutable} data={component} />
+        return <TextInput key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'TextArea':
-        return <TextArea key={index} mutable={mutable} data={component} />
+        return <TextArea key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Dropdown':
-        return <Dropdown key={index} mutable={mutable} data={component} />
+        return <Dropdown key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'NumberInput':
-        return <NumberInput key={index} mutable={mutable} data={component} />
+        return <NumberInput key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Image':
         return <Image key={index} data={component} />
       case 'Rating':
-        return <Rating key={index} mutable={mutable} data={component} />
+        return <Rating key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Range':
-        return <Range key={index} mutable={mutable} data={component} />
+        return <Range key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Tags':
-        return <Tags key={index} mutable={mutable} data={component} />
+        return <Tags key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Checkboxes':
-        return <Checkboxes key={index} mutable={mutable} data={component} />
+        return <Checkboxes key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'RadioButtons':
-        return <RadioButtons key={index} mutable={mutable} data={component} />
+        return <RadioButtons key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'DatePicker':
-        return <DatePicker key={index} mutable={mutable} data={component} />
+        return <DatePicker key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Signature':
-        return <Signature key={index} mutable={mutable} data={component} />
+        return <Signature key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       case 'Download':
         return <Download key={index} mutable={mutable} data={component} />
       case 'HyperLink':
         return <HyperLink key={index} mutable={mutable} data={component} />
       case 'Camera':
-        return <Camera key={index} mutable={mutable} data={component} />
+        return <Camera key={index} mutable={mutable} data={component} columnIndex={index} update={update} />
       default:
         return;
     }

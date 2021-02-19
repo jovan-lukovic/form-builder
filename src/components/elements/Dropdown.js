@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -29,23 +29,20 @@ const useStyles = makeStyles({
   },
 });
 
-const Dropdown = ({ data, mutable }) => {
+const Dropdown = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [value, setValue] = useState('');
-
-  useEffect(() => {
-    setValue(data.default_value);
-  }, [data.default_value]);
 
   const handleChange = (e) => {
-    setValue(e.target.value);
+    let component = data;
+    component.default_value = e.target.value;
+    update(columnIndex, component);
   };
 
   return (
     <div className={classes.container}>
       <div className={classes.main}>
         <label dangerouslySetInnerHTML={{__html: data.label}}></label>
-        <select disabled={mutable} onChange={handleChange} value={value}>
+        <select disabled={mutable} onChange={handleChange} value={data.default_value}>
           {
             data.options.map((option, index) => {
               return <option key={index} value={option.value}>{option.text}</option>
@@ -60,11 +57,15 @@ const Dropdown = ({ data, mutable }) => {
 Dropdown.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Dropdown.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Dropdown;

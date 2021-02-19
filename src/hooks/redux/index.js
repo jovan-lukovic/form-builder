@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 
-import { createElement, toggleElement, updateElements, deleteElement, insertElement } from "../../store/actions/element";
+import { createElement, toggleElement, updateElements, deleteElement, insertElement, updateElement } from "../../store/actions/element";
 import { createForm, toggleForm, deleteForm, updateForm } from "../../store/actions/form";
 
 export const useCreateElement = () => {
@@ -26,6 +26,11 @@ export const useToggleElement = () => {
 export const useInsertElement = () => {
   const dispatch = useDispatch();
   return (id, component) => dispatch(insertElement(id, component));
+};
+
+export const useUpdateElement = () => {
+  const dispatch = useDispatch();
+  return (id, element) => dispatch(updateElement(id, element))
 };
 
 export const useElements = () => useSelector(({

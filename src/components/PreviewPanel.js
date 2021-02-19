@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {createRef, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Button from '@material-ui/core/Button';
@@ -8,6 +8,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 import { useElements } from "../hooks/redux";
 import Elements from "./elements";
+import ReactToPdf from "react-to-pdf";
 
 const isOpenPreviewPanelAtom = atom(false);
 
@@ -36,18 +37,17 @@ const useStyles = makeStyles({
     },
   },
   viewer: {
-    padding: 30,
+    padding: '0 30px 30px',
     display: 'flex',
     flexDirection: 'column',
     '@media(max-width: 992px)': {
-      padding: '20px 0 10px',
+      padding: '0 0 10px',
     },
   },
   body: {
-
+    padding: '30px 0 10px',
   },
   footer: {
-    paddingTop: 10,
     textAlign: 'right',
     '& button': {
       marginRight: 10,
@@ -59,6 +59,8 @@ function PreviewPanel({ isOpen, closePanel }) {
   const classes = useStyles();
   const elements = useElements();
   const [openState, setOpenState] = useAtom(isOpenPreviewPanelAtom);
+
+  const downloadTargetRef = createRef();
 
   useEffect(() => {
     setOpenState(isOpen);
@@ -88,7 +90,7 @@ function PreviewPanel({ isOpen, closePanel }) {
           className={classes.viewer}
           role="presentation"
         >
-          <div className={classes.body}>
+          <div className={classes.body} ref={downloadTargetRef}>
             {
               elements.map(item => (
                 <Elements key={item.id} item={item} />
@@ -96,6 +98,11 @@ function PreviewPanel({ isOpen, closePanel }) {
             }
           </div>
           <div className={classes.footer}>
+            <ReactToPdf targetRef={downloadTargetRef}>
+              {({toPdf}) => (
+                <Button variant='outlined' onClick={toPdf}>Export</Button>
+              )}
+            </ReactToPdf>
             <Button variant='outlined' onClick={closePanel}>OK</Button>
           </div>
         </div>

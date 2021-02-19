@@ -1,5 +1,5 @@
 import 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import DateFnsUtils from '@date-io/date-fns';
@@ -23,18 +23,14 @@ const useStyles = makeStyles({
   },
 });
 
-const DatePicker = ({data, mutable}) => {
+const DatePicker = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [selectedDate, setSelectedDate] = useState(null);
-
-  useEffect(() => {
-    setSelectedDate(data.default_value);
-  }, [data.default_value]);
 
   const handleChange = (e) => {
-    setSelectedDate(e);
+    let component = data;
+    component.default_value = e;
+    update(columnIndex, component);
   };
-
 
   return (
     <div className={classes.container}>
@@ -44,7 +40,7 @@ const DatePicker = ({data, mutable}) => {
           <KeyboardDatePicker
             margin="normal"
             format="MM/dd/yyyy"
-            value={selectedDate}
+            value={data.default_value}
             onChange={handleChange}
             disabled={mutable}
           />
@@ -57,11 +53,15 @@ const DatePicker = ({data, mutable}) => {
 DatePicker.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 DatePicker.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default DatePicker;

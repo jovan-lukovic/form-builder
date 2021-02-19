@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
@@ -35,16 +35,13 @@ const useStyles = makeStyles({
   }
 });
 
-const Tags = ({ data, mutable }) => {
+const Tags = ({ data, mutable, columnIndex, update }) => {
   const classes = useStyles();
-  const [value, setValue] = useState([]);
-
-  useEffect(() => {
-    setValue(data.default_value);
-  }, [data.default_value]);
 
   const handleChange = (e) => {
-    setValue(e.target.value)
+    let component = data;
+    component.default_value = e.target.value;
+    update(columnIndex, component);
   };
 
   return (
@@ -55,7 +52,7 @@ const Tags = ({ data, mutable }) => {
           <Select
             className={classes.select}
             multiple
-            value={value}
+            value={data.default_value}
             onChange={handleChange}
             disabled={mutable}
             renderValue={(selected) => (
@@ -83,11 +80,15 @@ const Tags = ({ data, mutable }) => {
 Tags.propTypes = {
   data: PropTypes.object.isRequired,
   mutable: PropTypes.bool,
+  columnIndex: PropTypes.number,
+  update: PropTypes.func,
 };
 
 Tags.defaultProps = {
   data: {},
   mutable: false,
+  columnIndex: 0,
+  update: () => {},
 };
 
 export default Tags;
